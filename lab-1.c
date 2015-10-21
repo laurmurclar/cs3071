@@ -8,7 +8,12 @@ int currentState = 1;
 */
 int go_to_state(int state)
 {
-
+	if (state == 9)
+	{
+		printf("Error: Not a valid input.\n");
+	} else {
+		printf("%d->%d\n", currentState, state);
+	}
 	currentState = state;
 	// Perhaps doing some other stuff
 	return 0;
@@ -19,6 +24,7 @@ tells you which state you need to transition to.
 Note: Doesn't deal with the end marker. Thats dealt with in the function which calls this */
 int get_next_state(int current_state, int inputType)
 {
+	printf("Input: %d\n", inputType);
 	switch (current_state){
 		case 1:
 			if (inputType == 0) { // 0-7
@@ -29,8 +35,8 @@ int get_next_state(int current_state, int inputType)
 				go_to_state(5);
 			} else if (inputType ==5) { // -+
 				go_to_state(7);
-			} else {
-				//ERROR
+			} else { //Error
+				go_to_state(9);
 			}
 			break;
 		case 2:
@@ -44,6 +50,8 @@ int get_next_state(int current_state, int inputType)
 				go_to_state(6);
 			} else if (inputType == 4) { //  aA,cC,dD,eE
 				go_to_state(5);
+			} else { //Error
+				go_to_state(9);
 			}
 			break;
 		case 3:
@@ -51,8 +59,8 @@ int get_next_state(int current_state, int inputType)
 				go_to_state(5);
 			} else if (inputType == 3) { // h,H
 				go_to_state(6);
-			} else {
-				//ERROR
+			} else {//Error
+				go_to_state(9);
 			}
 			break;
 		case 4:
@@ -62,8 +70,8 @@ int get_next_state(int current_state, int inputType)
 				go_to_state(5);
 			} else if (inputType == 3) { // h,H
 				go_to_state(6);
-			} else {
-				//ERROR
+			} else {//Error
+				go_to_state(9);
 			}
 			break;
 		case 5:
@@ -71,8 +79,8 @@ int get_next_state(int current_state, int inputType)
 				go_to_state(5);
 			} else if (inputType == 3) { // h,H
 				go_to_state(6);
-			} else {
-				//ERROR
+			} else {//Error
+				go_to_state(9);
 			}
 			break;
 		case 6:
@@ -82,12 +90,12 @@ int get_next_state(int current_state, int inputType)
 		case 8:
 			if (inputType == 0 || inputType == 1) { // 0-7, 8 or 9
 				go_to_state(8);
-			} else {
-				//ERROR
+			} else {//Error
+				go_to_state(9);
 			}
 			break;
-		default:
-			//Error
+		default://Error
+			go_to_state(9);
 			break;
 	}
 	return 0;
@@ -168,7 +176,8 @@ int main() {
 	} // hit end marker
 	if (!is_int_end_state() && !is_hex_end_state() && !is_oct_end_state()) { // not any of the valid end states
 		// error, not a valid input
-		printf("Error: Not a valid input.\n");
+		//TODO dont go to state 9 again, but still print in cases where we ended in another invalid state eg. 54b5
+		go_to_state(9);
 		EXIT_FAILURE;
 	} else { // it is a valid end state
 		// calculate the decimal value & print it
