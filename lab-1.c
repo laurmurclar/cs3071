@@ -146,6 +146,7 @@ int is_oct_end_state()
 	return (currentState == 3);
 }
 
+//TODO combine print functions into one, which has the base as a parameter
 void print_decimal_of_int(char sval[])
 {
 	//TODO check overflow
@@ -172,12 +173,12 @@ void print_decimal_of_int(char sval[])
 void print_decimal_of_hex(char sval[])
 {
 	//TODO check overflow
-	//TODO convert to decimal
+	//convert to decimal
 	int value = 0;
 	int power = 0;
 	for (int i = strlen(sval)-2; i >= 0; i--) // Start from the least sig digit (before h)
 	{
-		printf("Entered for\n");
+		printf("Entered hex for\n");
 		printf("%c\n", sval[i]);
 		if (isdigit(sval[i]))
 		{
@@ -224,8 +225,20 @@ void print_decimal_of_hex(char sval[])
 void print_decimal_of_oct(char sval[])
 {
 	//TODO check overflow
-	//TODO convert to decimal
-	printf("Oct: %s\n", sval);
+	//convert to decimal
+	int value = 0;
+	int power = 0;
+	for (int i = strlen(sval)-2; i >= 0; i--) // Start from the least sig digit (before b)
+	{
+		printf("Entered oct for\n");
+		printf("%c\n", sval[i]);
+		if (isdigit(sval[i]))
+		{
+			value += (sval[i]-'0') * (pow(8, power));
+		}
+		power++;
+	}
+	printf("Oct: %d\n", value);
 }
 
 int main() {
