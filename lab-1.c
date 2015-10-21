@@ -147,16 +147,38 @@ int is_oct_end_state()
 
 void print_decimal_of_int(char sval[])
 {
-	printf("Int: %s\n", sval);
+	//TODO check overflow
+	// convert to decimal
+	int value = 0;
+	int sign = 1;
+	for (int i = 0; i < strlen(sval); i++)
+	{
+		if (sval[i] == '+') continue;
+		if (sval[i] == '-')
+		{
+			sign = -1;
+		}
+		else {
+			value *= 10;
+			value += sval[i]-'0';
+		}
+	}
+	value *= sign;
+	
+	printf("Int: %d\n", value);
 }
 
 void print_decimal_of_hex(char sval[])
 {
+	//TODO check overflow
+	//TODO convert to decimal
 	printf("Hex: %s\n", sval);
 }
 
 void print_decimal_of_oct(char sval[])
 {
+	//TODO check overflow
+	//TODO convert to decimal
 	printf("Oct: %s\n", sval);
 }
 
