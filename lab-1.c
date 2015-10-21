@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <ctype.h>
+#include <math.h>
 
 int currentState = 1;
 /* Transitions to given state. Updates the current state. Advances the input
@@ -164,7 +165,7 @@ void print_decimal_of_int(char sval[])
 		}
 	}
 	value *= sign;
-	
+
 	printf("Int: %d\n", value);
 }
 
@@ -172,7 +173,52 @@ void print_decimal_of_hex(char sval[])
 {
 	//TODO check overflow
 	//TODO convert to decimal
-	printf("Hex: %s\n", sval);
+	int value = 0;
+	int power = 0;
+	for (int i = strlen(sval)-2; i >= 0; i--) // Start from the least sig digit (before h)
+	{
+		printf("Entered for\n");
+		printf("%c\n", sval[i]);
+		if (isdigit(sval[i]))
+		{
+			value += (sval[i]-'0') * (pow(16, power));
+		} else if (isalpha(sval[i]))
+		{
+			int currentDigit = 1;
+			switch (sval[i])
+			{
+				case 'a':
+				case 'A':
+					currentDigit = 10;
+					break;
+				case 'b':
+				case 'B':
+					currentDigit = 11;
+					break;
+				case 'c':
+				case 'C':
+					currentDigit = 12;
+					break;
+				case 'd':
+				case 'D':
+					currentDigit = 13;
+					break;
+				case 'e':
+				case 'E':
+					currentDigit = 14;
+					break;
+				case 'f':
+				case 'F':
+					currentDigit = 15;
+					break;
+				default:
+					break;
+			}
+			value += currentDigit * (pow(16, power));
+		}
+		power++;
+	}
+	printf("Hex: %d\n", value);
 }
 
 void print_decimal_of_oct(char sval[])
