@@ -5,7 +5,7 @@
 #include <math.h>
 
 #define NSTATES 8 // Don't need to include error state since once we trans, we never trans again. Use 8 as the error state
-#define NINPUTS 6
+#define NINPUTS 7
 #define OCT 8
 #define INT 10
 #define HEX 16
@@ -56,6 +56,7 @@ int get_input_type(char c){
 		if (c == 'b' || c == 'B') return 2;
 		else if (c == 'h' || c == 'H') return 3;
 		else if ((c >= 'a' && c <= 'e') || (c >= 'A' && c<= 'E')) return 4;
+		else return 6;
 	} else if (c == '-' || c == '+') return 5;
 	return 6;
 }
@@ -127,9 +128,7 @@ void print_lexical_token(int base, char lexeme[])
 	printf("Number: %d\n", value);
 }
 
-int main() {
-	char input[20];
-	printf("hello\n");
+int main(int argc, char *argv[]) {
 	for (int i = 0; i < NSTATES; i++)
 	{
 		for (int j = 0; j < NINPUTS; j++)
@@ -148,25 +147,26 @@ int main() {
 	table[7][0] = 7; table[7][1] = 7;
 
 
-	printf("Enter a value: ");
-	gets(input);
-	int lengthOfInput = strlen(input);
-
-	for (int i = 0; i < lengthOfInput; i++) { // for each char in the input
-		int inType = get_input_type(input[i]);
-		if (!get_next_state(currentState, inType))
-		{
-			break;
+	for (int a = 1; a < argc; a++)
+	{
+		char* input = argv[a];
+		int lengthOfInput = strlen(input);
+		for (int i = 0; i < lengthOfInput; i++) { // for each char in the input
+			int inType = get_input_type(input[i]);
+			if (!get_next_state(currentState, inType))
+			{
+				break;
+			}
 		}
+		if (!is_end_state(INT) && !is_end_state(HEX) && !is_end_state(OCT)) {
+			currentState = NSTATES;
+			printf("Error: Not a vaild hex, oct or int value.\n");
+		} else { // it is a valid end state
+			// calculate the decimal value & print it
+			if (is_end_state(INT)) print_lexical_token(INT, input);
+			else if (is_end_state(HEX)) print_lexical_token(HEX, input);
+			else if (is_end_state(OCT)) print_lexical_token(OCT, input);
+		}
+		EXIT_SUCCESS;
 	}
-	if (!is_end_state(INT) && !is_end_state(HEX) && !is_end_state(OCT)) {
-		currentState = NSTATES;
-		printf("Error: Not a vaild hex, oct or int value.\n");
-	} else { // it is a valid end state
-		// calculate the decimal value & print it
-		if (is_end_state(INT)) print_lexical_token(INT, input);
-		else if (is_end_state(HEX)) print_lexical_token(HEX, input);
-		else if (is_end_state(OCT)) print_lexical_token(OCT, input);
-	}
-	EXIT_SUCCESS;
 }
