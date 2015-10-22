@@ -4,8 +4,8 @@
 #include <ctype.h>
 #include <math.h>
 
-#define NSTATES 8 // Don't need to include error state since once we trans, we never trans again
-#define NINPUTS 6 // TODO make final
+#define NSTATES 8 // Don't need to include error state since once we trans, we never trans again. Use 8 as the error state
+#define NINPUTS 6
 #define OCT 8
 #define INT 10
 #define HEX 16
