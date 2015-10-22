@@ -42,7 +42,7 @@ int get_next_state(int current_state, int inputType)
  * 		1 	8,9
  * 		2 	b,B
  * 		3 	h,H
- * 		4 	a,A,c,C,d,D,e,E
+ * 		4 	a,A,c,C,d,D,e,E,f,F
  * 		5 	-,+
  * 		6 	error
  */	
@@ -54,7 +54,7 @@ int get_input_type(char c){
 	} else if (isalpha(c)) {
 		if (c == 'b' || c == 'B') return 2;
 		else if (c == 'h' || c == 'H') return 3;
-		else if ((c >= 'a' && c <= 'e') || (c >= 'A' && c<= 'E')) return 4;
+		else if ((c >= 'a' && c <= 'f') || (c >= 'A' && c<= 'F')) return 4;
 		else return 6;
 	} else if (c == '-' || c == '+') return 5;
 	return 6;
