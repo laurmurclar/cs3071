@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <ctype.h>
-#include <math.h>
 
 #define NSTATES 8 // Don't need to include error state since once we trans, we never trans again. Use 8 as the error state
 #define NINPUTS 7
@@ -110,19 +109,19 @@ void print_lexical_token(int base, char lexeme[])
 		}
 		value *= sign;
 	} else {
-		int power = 0;
+		int power = 1;
 		for (int i = strlen(lexeme)-2; i >= 0; i--) // Start from the least sig digit (before the oct/hex indicator)
 		{
 			if (isdigit(lexeme[i]))
 			{
-				value += (lexeme[i]-'0') * (pow(base, power));
+				value += (lexeme[i]-'0') * power;
 			} else if (base == HEX && isalpha(lexeme[i]))
 			{
 				int currentDigit = tolower(lexeme[i]) - 'a';
 				currentDigit += 10;
-				value += currentDigit * (pow(base, power));
+				value += currentDigit * power;
 			}
-			power++;
+			power *= base;
 		}
 	}
 	printf("Lexical token (constant, %d)\n", value);
