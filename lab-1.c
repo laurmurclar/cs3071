@@ -4,117 +4,49 @@
 #include <ctype.h>
 #include <math.h>
 
-int currentState = 1;
-/* Transitions to given state. Updates the current state. Advances the input
-*/
-int go_to_state(int state)
-{
-	if (state == 9)
-	{
-		printf("Error: Not a valid input.\n");
-	} else {
-		printf("%d->%d\n", currentState, state);
-	}
-	currentState = state;
-	// Perhaps doing some other stuff
-	return 0;
-}
+#define NSTATES 8 // Don't need to include error state since once we trans, we never trans again
+#define NINPUTS 6 // TODO make final
+#define OCT 8
+#define INT 10
+#define HEX 16
 
-/* function which given the input and the current state, 
-tells you which state you need to transition to.
-Note: Doesn't deal with the end marker. Thats dealt with in the function which calls this */
+int currentState = 0;
+int table[NSTATES][NINPUTS];
+
+/* 
+ * Function: 	get_next_state
+ * ---------------------------
+ * Transitions to the next state given the current state and the input.
+ * 
+ * returns: 0 	if it transitioned to the error state.
+ *			1 	otherwise
+ */
 int get_next_state(int current_state, int inputType)
 {
-	printf("Input: %d\n", inputType);
-	switch (current_state){
-		case 1:
-			if (inputType == 0) { // 0-7
-				go_to_state(2);
-			} else if (inputType == 1) { // 8 or 9
-				go_to_state(4);
-			} else if (inputType == 2 || inputType == 4) { // b,B or aA,cC,dD,eE
-				go_to_state(5);
-			} else if (inputType ==5) { // -+
-				go_to_state(7);
-			} else { //Error
-				go_to_state(9);
-			}
-			break;
-		case 2:
-			if (inputType == 0) { // 0-7
-				go_to_state(2);
-			} else if (inputType == 1) { // 8 or 9
-				go_to_state(4);
-			} else if (inputType == 2) { // b,B
-				go_to_state(3);
-			} else if (inputType == 3) { // h,H
-				go_to_state(6);
-			} else if (inputType == 4) { //  aA,cC,dD,eE
-				go_to_state(5);
-			} else { //Error
-				go_to_state(9);
-			}
-			break;
-		case 3:
-			if (inputType == 0 || inputType == 1 || inputType == 2 || inputType == 4) { // 0-7, 8 or 9, b,B, aA,cC,dD,eE
-				go_to_state(5);
-			} else if (inputType == 3) { // h,H
-				go_to_state(6);
-			} else {//Error
-				go_to_state(9);
-			}
-			break;
-		case 4:
-			if (inputType == 0 || inputType == 1) { // 0-7, 8 or 9
-				go_to_state(4);
-			} else if (inputType == 2 || inputType == 4) { // b,B, aA,cC,dD,eE
-				go_to_state(5);
-			} else if (inputType == 3) { // h,H
-				go_to_state(6);
-			} else {//Error
-				go_to_state(9);
-			}
-			break;
-		case 5:
-			if (inputType == 0 || inputType == 1 || inputType == 2 || inputType == 4) { // 0-7, 8 or 9, b,B, aA,cC,dD,eE
-				go_to_state(5);
-			} else if (inputType == 3) { // h,H
-				go_to_state(6);
-			} else {//Error
-				go_to_state(9);
-			}
-			break;
-		case 6:
-			// Error
-			break;
-		case 7:
-		case 8:
-			if (inputType == 0 || inputType == 1) { // 0-7, 8 or 9
-				go_to_state(8);
-			} else {//Error
-				go_to_state(9);
-			}
-			break;
-		default://Error
-			go_to_state(9);
-			break;
+	currentState = table[current_state][inputType];
+	printf("%d->%d\n", current_state, currentState);
+	if (currentState == NSTATES) 
+	{
+		return 0; 
 	}
-	return 0;
+	else return 1;
 }
 
-/* inputTypes 
-* 0 = 0-7 
-* 1 = 8|9
-* 2	= b|B
-* 3 = h|H
-* 4 = aA,cC,dD,eE
-* 5 = -+
-* 6 = end/error/idk
-*/	
-
 /*
-* Outputs the category of the given char.
-*/	
+ * Function:	get_input_type
+ * ---------------------------
+ * Gets the input type/category of the given character c.
+ * 
+ * Returns: 
+ * 			When c is:
+ * 		0   0-7 
+ * 		1 	8,9
+ * 		2 	b,B
+ * 		3 	h,H
+ * 		4 	a,A,c,C,d,D,e,E
+ * 		5 	-,+
+ * 		6 	error
+ */	
 int get_input_type(char c){
 	if (isdigit(c))
 	{
@@ -128,143 +60,113 @@ int get_input_type(char c){
 	return 6;
 }
 
-// Checks if the current state is a valid end state for an integer input
-int is_int_end_state()
+/*
+ * Function:	is_end_state
+ * -------------------------
+ * Checks if the current state is a valid end state for an input of the given base.
+ *
+ * Returns: 
+ *		1 	if the current state is a valid end state
+ * 		0 	otherwise
+ */
+int is_end_state(int base)
 {
-	return (currentState == 2 || currentState == 4 || currentState == 8);
+	return (((base == INT)&&(currentState == 1 || currentState == 3 || currentState == 7)) ||
+			(base == HEX && currentState == 5) ||
+			(base == OCT && currentState == 2));
 }
 
-// Checks if the current state is a valid end state for a hexadecimal input
-int is_hex_end_state()
-{
-	return (currentState == 6);
-}
-
-// Checks if the current state is a valid end state for an octal input
-int is_oct_end_state()
-{
-	return (currentState == 3);
-}
-
-//TODO combine print functions into one, which has the base as a parameter
-void print_decimal_of_int(char sval[])
+/*
+ * Function: 	print_lexical_token
+ * --------------------------------
+ * Takes a 32-bit octal, hexadecimal or signed integer constant and prints the corresponding lexical token.
+ *
+ * Params:
+ *	base	The base that the constant is in
+ *  lexeme	The string value of the constant 
+ *
+ */
+void print_lexical_token(int base, char lexeme[])
 {
 	//TODO check overflow
-	// convert to decimal
+	//Find decimal value
 	int value = 0;
-	int sign = 1;
-	for (int i = 0; i < strlen(sval); i++)
-	{
-		if (sval[i] == '+') continue;
-		if (sval[i] == '-')
-		{
-			sign = -1;
-		}
-		else {
-			value *= 10;
-			value += sval[i]-'0';
-		}
-	}
-	value *= sign;
 
-	printf("Int: %d\n", value);
-}
-
-void print_decimal_of_hex(char sval[])
-{
-	//TODO check overflow
-	//convert to decimal
-	int value = 0;
-	int power = 0;
-	for (int i = strlen(sval)-2; i >= 0; i--) // Start from the least sig digit (before h)
+	if (base == INT)
 	{
-		printf("Entered hex for\n");
-		printf("%c\n", sval[i]);
-		if (isdigit(sval[i]))
+		int sign = 1;
+		for (int i = 0; i < strlen(lexeme); i++)
 		{
-			value += (sval[i]-'0') * (pow(16, power));
-		} else if (isalpha(sval[i]))
-		{
-			int currentDigit = 1;
-			switch (sval[i])
+			if (lexeme[i] == '+') continue;
+			if (lexeme[i] == '-')
 			{
-				case 'a':
-				case 'A':
-					currentDigit = 10;
-					break;
-				case 'b':
-				case 'B':
-					currentDigit = 11;
-					break;
-				case 'c':
-				case 'C':
-					currentDigit = 12;
-					break;
-				case 'd':
-				case 'D':
-					currentDigit = 13;
-					break;
-				case 'e':
-				case 'E':
-					currentDigit = 14;
-					break;
-				case 'f':
-				case 'F':
-					currentDigit = 15;
-					break;
-				default:
-					break;
+				sign = -1;
 			}
-			value += currentDigit * (pow(16, power));
+			else {
+				value *= 10;
+				value += lexeme[i]-'0';
+			}
 		}
-		power++;
-	}
-	printf("Hex: %d\n", value);
-}
-
-void print_decimal_of_oct(char sval[])
-{
-	//TODO check overflow
-	//convert to decimal
-	int value = 0;
-	int power = 0;
-	for (int i = strlen(sval)-2; i >= 0; i--) // Start from the least sig digit (before b)
-	{
-		printf("Entered oct for\n");
-		printf("%c\n", sval[i]);
-		if (isdigit(sval[i]))
+		value *= sign;
+	} else {
+		int power = 0;
+		for (int i = strlen(lexeme)-2; i >= 0; i--) // Start from the least sig digit (before the oct/hex indicator)
 		{
-			value += (sval[i]-'0') * (pow(8, power));
+			if (isdigit(lexeme[i]))
+			{
+				value += (lexeme[i]-'0') * (pow(base, power));
+			} else if (base == HEX && isalpha(lexeme[i]))
+			{
+				int currentDigit = tolower(lexeme[i]) - 'a';
+				currentDigit += 10;
+				value += currentDigit * (pow(base, power));
+			}
+			power++;
 		}
-		power++;
 	}
-	printf("Oct: %d\n", value);
+	printf("Number: %d\n", value);
 }
 
 int main() {
 	char input[20];
+	printf("hello\n");
+	for (int i = 0; i < NSTATES; i++)
+	{
+		for (int j = 0; j < NINPUTS; j++)
+		{
+			table[i][j] = NSTATES; // Default transition is to error
+		}
+	}
+	// table[X][Y] = Z; ....When in state X, on input Y, go to state Z
+	table[0][0] = 1; table[0][1] = 3; table[0][2] = 4; 					table[0][4] = 4; table[0][5] = 6;
+	table[1][0] = 1; table[1][1] = 3; table[1][2] = 2; table[1][3] = 5; table[1][4] = 4;
+	table[2][0] = 4; table[2][1] = 4; table[2][2] = 4; table[2][3] = 5; table[2][4] = 4;
+	table[3][0] = 3; table[3][1] = 3; table[3][2] = 4; table[3][3] = 5; table[3][4] = 4;
+	table[4][0] = 4; table[4][1] = 4; table[4][2] = 4; table[4][3] = 5; table[4][4] = 4;
 
-	// get input
+	table[6][0] = 7; table[6][1] = 7;
+	table[7][0] = 7; table[7][1] = 7;
+
+
 	printf("Enter a value: ");
 	gets(input);
 	int lengthOfInput = strlen(input);
 
 	for (int i = 0; i < lengthOfInput; i++) { // for each char in the input
-		// work out input type
 		int inType = get_input_type(input[i]);
-		// get next state
-		get_next_state(currentState, inType);
-	} // hit end marker
-	if (!is_int_end_state() && !is_hex_end_state() && !is_oct_end_state()) { // not any of the valid end states
-		// error, not a valid input
-		//TODO dont go to state 9 again, but still print in cases where we ended in another invalid state eg. 54b5
-		go_to_state(9);
-		EXIT_FAILURE;
+		if (!get_next_state(currentState, inType))
+		{
+			break;
+		}
+	}
+	if (!is_end_state(INT) && !is_end_state(HEX) && !is_end_state(OCT)) {
+		currentState = NSTATES;
+		printf("Error: Not a vaild hex, oct or int value.\n");
 	} else { // it is a valid end state
 		// calculate the decimal value & print it
-		if (is_int_end_state()) print_decimal_of_int(input);
-		else if (is_hex_end_state()) print_decimal_of_hex(input);
-		else if (is_oct_end_state()) print_decimal_of_oct(input);
+		if (is_end_state(INT)) print_lexical_token(INT, input);
+		else if (is_end_state(HEX)) print_lexical_token(HEX, input);
+		else if (is_end_state(OCT)) print_lexical_token(OCT, input);
 	}
 	EXIT_SUCCESS;
 }
