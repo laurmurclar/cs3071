@@ -125,7 +125,7 @@ void print_lexical_token(int base, char lexeme[])
 			power++;
 		}
 	}
-	printf("Number: %d\n", value);
+	printf("Lexical token (constant, %d)\n", value);
 }
 
 int main(int argc, char *argv[]) {
@@ -146,9 +146,9 @@ int main(int argc, char *argv[]) {
 	table[6][0] = 7; table[6][1] = 7;
 	table[7][0] = 7; table[7][1] = 7;
 
-
 	for (int a = 1; a < argc; a++)
 	{
+		currentState = 0;
 		char* input = argv[a];
 		int lengthOfInput = strlen(input);
 		for (int i = 0; i < lengthOfInput; i++) { // for each char in the input
