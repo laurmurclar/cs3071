@@ -26,10 +26,8 @@ int table[NSTATES][NINPUTS];
 int get_next_state(int current_state, int inputType)
 {
 	currentState = table[current_state][inputType];
-	printf("%d->%d\n", current_state, currentState);
 	if (currentState == NSTATES) return 0; 
 	else if (currentState == 1 || currentState == 2) zCount++;
-	printf("Z: %d\n", zCount);
 	return 1;
 }
 
@@ -92,7 +90,6 @@ int is_end_state(int base){
  */
 int print_lexical_token(int base, char lexeme[]){
 	// Check overflow
-	printf("Base: %d\n", base);
 	int nDigits = 0;
 	
 	if (base == OCT || base == HEX || (base == INT && (lexeme[0] == '-' || lexeme[0] == '+'))) {
@@ -100,7 +97,6 @@ int print_lexical_token(int base, char lexeme[]){
 	} else {
 		nDigits = strlen(lexeme) - zCount;
 	}
-	printf("nDigits: %d\n", nDigits);
 	if ((base == OCT && nDigits > 11)||
 		(base == HEX && nDigits > 8) ||
 		(base == INT && nDigits > 10)){
