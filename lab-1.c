@@ -16,12 +16,12 @@ char minInt[] = "-2147483648";
 int table[NSTATES][NINPUTS];
 
 /* 
- * Function: 	get_next_state
+ * Function:    get_next_state
  * ---------------------------
  * Transitions to the next state given the current state and the input.
  * 
- * returns: 0 	if it transitioned to the error state.
- *			1 	otherwise
+ * returns: 0   if it transitioned to the error state.
+ *          1   otherwise
  */
 int get_next_state(int current_state, int inputType)
 {
@@ -34,21 +34,21 @@ int get_next_state(int current_state, int inputType)
 }
 
 /*
- * Function:	get_input_type
+ * Function:    get_input_type
  * ---------------------------
  * Gets the input type/category of the given character c.
  * 
  * Returns: 
- * 			When c is:
- *		0 	0
- * 		1   1-7 
- * 		2 	8,9
- * 		3 	b,B
- * 		4 	h,H
- * 		5 	a,A,c,C,d,D,e,E,f,F
- * 		6 	-,+
- * 		7 	error
- */	
+ *          When c is:
+ *      0   0
+ *      1   1-7 
+ *      2   8,9
+ *      3   b,B
+ *      4   h,H
+ *      5   a,A,c,C,d,D,e,E,f,F
+ *      6   -,+
+ *      7   error
+ */ 
 int get_input_type(char c){
 	if (isdigit(c)){
 		if (c-'0' == 0) return 0;
@@ -64,13 +64,13 @@ int get_input_type(char c){
 }
 
 /*
- * Function:	is_end_state
+ * Function:    is_end_state
  * -------------------------
  * Checks if the current state is a valid end state for an input of the given base.
  *
  * Returns: 
- *		1 	if the current state is a valid end state
- * 		0 	otherwise
+ *      1   if the current state is a valid end state
+ *      0   otherwise
  */
 int is_end_state(int base){
 	return (((base == INT) && (currentState == 1 || currentState == 2 || currentState == 3 || 
@@ -79,16 +79,16 @@ int is_end_state(int base){
 }
 
 /*
- * Function: 	print_lexical_token
+ * Function:    print_lexical_token
  * --------------------------------
  * Takes a 32-bit octal, hexadecimal or signed integer constant and prints the corresponding lexical token.
  *
  * Params:
- *	base	The base that the constant is in
- *  lexeme	The string value of the constant 
+ *  base    The base that the constant is in
+ *  lexeme  The string value of the constant 
  *
  * Returns: 0 if overflow occurs
- *			1 otherwise
+ *          1 otherwise
  */
 int print_lexical_token(int base, char lexeme[]){
 	// Check overflow
@@ -168,7 +168,7 @@ int print_lexical_token(int base, char lexeme[]){
 			power *= base;
 		}
 	}
-	printf("Lexical token (constant, %d)\n", value);
+	printf("Lexeme \"%s\"\t\tLexical token (constant, %d)\n", lexeme, value);
 	return 1;
 }
 
@@ -179,8 +179,8 @@ int main(int argc, char *argv[]) {
 		}
 	}
 	// table[X][Y] = Z; ....When in state X, on input Y, go to state Z
-	table[0][0] = 1; table[0][1] = 3; table[0][2] = 5; table[0][3] = 6; 				 table[0][5] = 6; table[0][6] = 8;
-	table[1][0] = 1; table[1][1] = 3; table[1][2] = 5; table[1][3] = 6; table[1][4] = 7; table[1][5] = 6;
+	table[0][0] = 1; table[0][1] = 3; table[0][2] = 5; table[0][3] = 6;                  table[0][5] = 6; table[0][6] = 8;
+	table[1][0] = 1; table[1][1] = 3; table[1][2] = 5; table[1][3] = 4; table[1][4] = 7; table[1][5] = 6;
 	table[2][0] = 2; table[2][1] = 9; table[2][2] = 9;
 	table[3][0] = 3; table[3][1] = 3; table[3][2] = 5; table[3][3] = 4; table[3][4] = 7; table[3][5] = 6;
 	table[4][0] = 6; table[4][1] = 6; table[4][2] = 6; table[4][3] = 6; table[4][4] = 7; table[4][5] = 6;
@@ -204,8 +204,7 @@ int main(int argc, char *argv[]) {
 		if (!is_end_state(INT) && !is_end_state(HEX) && !is_end_state(OCT)) {
 			currentState = NSTATES;
 			printf("Error, constant is not a vaild Hexadecimal, Octal or Integer value.\n");
-		} else { // it is a valid end state
-			// calculate the decimal value & print it
+		} else {
 			if (is_end_state(INT)) print_lexical_token(INT, input);
 			else if (is_end_state(HEX)) print_lexical_token(HEX, input);
 			else if (is_end_state(OCT)) print_lexical_token(OCT, input);
