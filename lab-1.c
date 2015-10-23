@@ -203,7 +203,7 @@ int main(int argc, char *argv[]) {
 		}
 		if (!is_end_state(INT) && !is_end_state(HEX) && !is_end_state(OCT)) {
 			currentState = NSTATES;
-			printf("Error: Not a vaild hex, oct or int value.\n");
+			printf("Error, constant is not a vaild Hexadecimal, Octal or Integer value.\n");
 		} else { // it is a valid end state
 			// calculate the decimal value & print it
 			if (is_end_state(INT)) print_lexical_token(INT, input);
